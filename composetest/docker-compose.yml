@@ -1,0 +1,28 @@
+version: "3"
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+
+  redis:
+    image: "redis:alpine"
+
+  wiremock:
+    container_name: project-wiremock
+    image: rodolpheche/wiremock
+    environment:
+      proxy-all : http://registry.hub.docker.com
+      record-mappings : 1
+      verbose : 1
+    command:
+      - --local-response-templating
+    volumes:
+      - ./wiremock:/home/wiremock
+    ports:
+      - 8081:8080
+

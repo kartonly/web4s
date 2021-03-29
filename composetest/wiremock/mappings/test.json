@@ -1,0 +1,10 @@
+{
+  "request" : {
+    "urlPath" : "/sale",
+    "method" : "GET"
+  },
+  "response" : {
+    "status": 200,
+    "body": "{{requ}}"
+  }
+}
