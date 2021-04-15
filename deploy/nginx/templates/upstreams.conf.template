@@ -1,0 +1,7 @@
+upstream php-upstream {
+    server php:9000;
+}
+
+upstream symfony-upstream {
+    server php:9001;
+}
