@@ -1,0 +1,32 @@
+version: "3"
+services:
+  nginx:
+    container_name: project-nginx
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    volumes:
+      - ./deploy/nginx/templates:/etc/nginx/templates
+    ports:
+      - "8081:80"
+    environment:
+      - NGINX_CUSTOM_SERVER_NAME=project-2021.local
+      - NGINX_SYMFONY_SERVER_NAME=project-symfony.local
+
+  php:
+    container_name: project-php
+    build:
+      context: .
+      dockerfile: deploy/php-fpm/Dockerfile
+    volumes:
+      - ./public:/data/public
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password --slow_query_log=1 --log_output=TABLE --long-query-time=1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: project2021
+    ports:
+      - 3306:3306
