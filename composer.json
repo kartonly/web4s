@@ -1,0 +1,6 @@
+{
+    "require": {
+        "doctrine/annotations": "^1.13",
+        "monolog/monolog": "1.0.*"
+    }
+}
