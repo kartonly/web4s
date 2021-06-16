@@ -1,0 +1,50 @@
+version: "3.5"
+services:
+  nginx:
+    container_name: lesson82-nginx
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    volumes:
+      - ./deploy/nginx/templates:/etc/nginx/templates
+      - ./var/log/nginx:/var/log/nginx
+    ports:
+      - "8081:80"
+    environment:
+      - NGINX_SYMFONY_SERVER_NAME=lesson82.local
+    links:
+      - php
+    networks:
+      - project
+
+  php:
+    container_name: lesson82-php
+    build:
+      context: .
+      dockerfile: deploy/php-fpm/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./public:/data/public:cached
+      - ./bin:/data/bin:cached
+      - ./config:/data/config:cached
+      - ./src:/data/src:cached
+      - ./vendor:/data/vendor:cached
+      - ./var/cache/:/data/var/cache:cached
+      - ./var/log:/data/var/log
+    networks:
+      - project
+
+  db:
+    container_name: lesson82-mongodb
+    image: mongo
+    ports:
+      - 27018:27017
+    volumes:
+      - ./volumes/mongo/:/data/db:cached
+    networks:
+      - project
+
+networks:
+  project:
+    name: lesson82-network

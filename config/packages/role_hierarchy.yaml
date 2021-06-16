@@ -1,0 +1,33 @@
+security:
+  role_hierarchy:
+    !php/const App\Core\User\Enum\Role::ADMIN:
+      - !php/const App\Core\User\Enum\Role::OPERATOR
+      - !php/const App\Core\User\Enum\Role::MANAGER
+      - !php/const App\Core\Order\Enum\Permission::ORDER_CREATE
+      - !php/const App\Core\User\Enum\Permission::USER_CREATE
+      - !php/const App\Core\User\Enum\Permission::USER_UPDATE
+      - !php/const App\Core\User\Enum\Permission::USER_DELETE
+      - !php/const App\Core\User\Enum\Permission::USER_VALIDATION
+      - !php/const App\Core\Order\Enum\Permission::ORDER_SHOW
+      - !php/const App\Core\Order\Enum\Permission::ORDER_UPDATE
+      - !php/const App\Core\Order\Enum\Permission::ORDER_DELETE
+      - !php/const App\Core\Order\Enum\Permission::ORDER_INDEX
+    !php/const App\Core\User\Enum\Role::OPERATOR:
+      - !php/const App\Core\User\Enum\Role::USER
+      - !php/const App\Core\User\Enum\Permission::USER_CONTACT_CREATE
+      - !php/const App\Core\User\Enum\Permission::USER_INDEX
+      - !php/const App\Core\User\Enum\Permission::USER_SHOW
+      - !php/const App\Core\Order\Enum\Permission::ORDER_SHOW
+    !php/const App\Core\User\Enum\Role::MANAGER:
+      - !php/const App\Core\User\Enum\Role::USER
+      - !php/const App\Core\Order\Enum\Permission::ORDER_CREATE
+      - !php/const App\Core\Order\Enum\Permission::ORDER_SHOW 
+      - !php/const App\Core\Order\Enum\Permission::ORDER_VALIDATION 
+      - !php/const App\Core\Order\Enum\Permission::ORDER_UPDATE
+      - !php/const App\Core\Order\Enum\Permission::ORDER_DELETE
+    !php/const App\Core\User\Enum\Role::CLIENT:
+      - !php/const App\Core\User\Enum\Role::USER
+      - !php/const App\Core\Order\Enum\Permission::ORDER_CREATE
+    !php/const App\Core\User\Enum\Role::USER:
+      - !php/const App\Core\Order\Enum\Permission::ORDER_SHOW
+
