@@ -23,4 +23,13 @@ class UserFactory
 
         return $user;
     }
+
+    public function update(
+        $user,
+        string $lastName,
+        string $firstName
+    ){
+        $user->setFirstName($firstName);
+        $user->setAbout($lastName);
+    }
 }

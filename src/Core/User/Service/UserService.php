@@ -50,8 +50,11 @@ class UserService
     public function updateUser(string $id, UserUpdateRequestDto $requestDto)
     {
         $user = $this->find($id);
-        $user->setLastName($requestDto->lastName);
-        $user->setFirstName($requestDto->firstName);
+
+        $user = $this->userFactory->update( $user,
+            $requestDto->lastName,
+            $requestDto->firstName
+        );
 
         $user = $this->userRepository->save($user);
 
