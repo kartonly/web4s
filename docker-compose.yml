@@ -1,0 +1,97 @@
+version: "3.5"
+services:
+  nginx:
+    container_name: lesson9-nginx
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    volumes:
+      - ./deploy/nginx/templates:/etc/nginx/templates
+      - ./var/log/nginx:/var/log/nginx
+    ports:
+      - "8081:80"
+    environment:
+      - NGINX_SYMFONY_SERVER_NAME=lesson9.local
+    links:
+      - php
+    networks:
+      - project
+
+  php:
+    container_name: lesson9-php
+    build:
+      context: .
+      dockerfile: deploy/php-fpm/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./public:/data/public:cached
+      - ./bin:/data/bin:cached
+      - ./config:/data/config:cached
+      - ./src:/data/src:cached
+      - ./vendor:/data/vendor:cached
+      - ./var/cache/:/data/var/cache:cached
+      - ./var/log:/data/var/log
+      - .var/cache/dev/doctrine/odm/mongodb/Hydrators:/data/varcache/doctrine/odm/mongodb/Hydrators:cached
+      - .var/cache/dev/doctrine/odm/mongodb/Proxies:/data/varcache/doctrine/odm/mongodb/Proxies:cached
+      - .var/cache/dev/doctrine/odm/mongodb/PersistentCollections:/data/varcache/doctrine/odm/mongodb/PersistentCollections:cached
+    networks:
+      - project
+
+  db:
+    container_name: lesson9-mongodb
+    image: mongo
+    ports:
+      - 27018:27017
+    volumes:
+      - ./volumes/mongo/:/data/db:cached
+    networks:
+      - project
+
+  # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - project
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  graylog:
+    image: graylog/graylog:4.0
+    environment:
+      # CHANGE ME (must be at least 16 characters)!
+      - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+      # Password: admin
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9005/
+      - GRAYLOG_MONGODB_URI=mongodb://lesson9-mongodb:27017/graylog
+      - GRAYLOG_HTTP_ENABLE_CORS=true
+    entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+    restart: always
+    depends_on:
+      - db
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9005:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    networks:
+      - project
+
+networks:
+  project:
+    name: lesson9-network

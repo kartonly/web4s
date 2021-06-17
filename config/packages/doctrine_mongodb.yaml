@@ -1,0 +1,24 @@
+doctrine_mongodb:
+  auto_generate_proxy_classes: true
+  auto_generate_hydrator_classes: true
+  connections:
+    default:
+      server: '%env(resolve:MONGODB_URL)%'
+      options: { }
+  default_database: '%env(resolve:MONGODB_DB)%'
+  document_managers:
+    default:
+      auto_mapping: true
+      mappings:
+        App\Core\User\Document:
+          is_bundle: false
+          type: annotation
+          dir: '%kernel.project_dir%/src/Core/User/Document'
+          prefix: 'App\Core\User\Document'
+          alias: AppCoreUser
+        App\Core\Order\Document:
+          is_bundle: false
+          type: annotation
+          dir: '%kernel.project_dir%/src/Core/Order/Document'
+          prefix: 'App\Core\Order\Document'
+          alias: AppCoreOrder
